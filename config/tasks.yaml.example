@@ -1,0 +1,25 @@
+# TaskTimer配置文件示例
+# 格式说明：
+# - schedule: 定时表达式（使用APScheduler格式）
+#   script: 要执行的脚本文件（相对于func目录的路径）
+#   enabled: 是否启用该任务
+#   description: 任务描述
+
+# 示例1：每分钟执行一次example.py脚本
+tasks:
+  - schedule: '*/1 * * * *'
+    script: 'example.py'
+    enabled: true
+    description: '每分钟执行示例脚本'
+  
+  # 示例2：每天凌晨1点执行backup.py脚本
+  - schedule: '0 1 * * *'
+    script: 'backup.py'
+    enabled: false
+    description: '每天凌晨1点执行备份脚本'
+  
+  # 示例3：每周一上午9点执行weekly_report.py脚本
+  - schedule: '0 9 * * 1'
+    script: 'weekly_report.py'
+    enabled: true
+    description: '每周一上午9点执行周报脚本'

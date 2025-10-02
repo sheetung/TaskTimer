@@ -1,0 +1,19 @@
+# TaskTimer配置文件
+# 格式说明：
+# - schedule: 定时表达式（使用APScheduler格式）
+#   script: 要执行的脚本文件（相对于func目录的路径）
+#   enabled: 是否启用该任务
+#   description: 任务描述
+#   target_id: 目标ID（必填，接收消息的用户或群组ID）
+#   target_type: 目标类型（可选，'person'表示个人，'group'表示群组，默认为'person'）
+#   bot_uuid: Bot UUID（可选，指定使用哪个机器人发送消息）
+
+# 示例1：每分钟执行一次example.py脚本并将结果发送给指定用户
+tasks:
+  - schedule: '*/1 * * * *'
+    script: 'example.py'
+    enabled: true
+    description: '每分钟执行示例脚本并发送结果'
+    target_id: '755855262'  # 从event_context中获取的目标ID
+    target_type: 'person'  # 个人消息
+    bot_uuid: 'de639861-be05-4018-859b-c2e2d3e0d603'  # 从event_context.get_bot_uuid()获取的Bot UUID

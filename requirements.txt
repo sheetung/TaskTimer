@@ -1,0 +1,11 @@
+# TaskTimer 插件依赖包
+# 请确保这些依赖在运行环境中可用
+
+# LangBot 插件基础依赖
+langbot-plugin
+
+# APScheduler - 用于定时任务调度
+apscheduler>=3.10.0
+
+# PyYAML - 用于解析YAML配置文件
+PyYAML>=6.0
