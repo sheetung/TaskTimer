@@ -9,3 +9,6 @@ apscheduler>=3.10.0
 
 # PyYAML - 用于解析YAML配置文件
 PyYAML>=6.0
+
+# requests - 用于发送HTTP请求
+requests>=2.31.0

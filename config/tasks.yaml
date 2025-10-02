@@ -10,10 +10,18 @@
 
 # 示例1：每分钟执行一次example.py脚本并将结果发送给指定用户
 tasks:
-  - schedule: '*/1 * * * *'
-    script: 'example.py'
+  # - schedule: '*/1 * * * *'
+  #   script: 'example.py'
+  #   enabled: true
+  #   description: '每分钟执行示例脚本并发送结果'
+  #   target_id: '755855262'  # 从event_context中获取的目标ID
+  #   target_type: 'person'  # 个人消息
+  #   bot_uuid: 'de639861-be05-4018-859b-c2e2d3e0d603'  # 从event_context.get_bot_uuid()获取的Bot UUID
+  
+  - schedule: '0 8 * * *'
+    script: 'zaobao_image.py'
     enabled: true
-    description: '每分钟执行示例脚本并发送结果'
-    target_id: '755855262'  # 从event_context中获取的目标ID
-    target_type: 'person'  # 个人消息
+    description: '每天早上8点获取并发送早报图片'
+    target_id: '855251469'  # 从event_context中获取的目标ID
+    target_type: 'group'  # 群组消息
     bot_uuid: 'de639861-be05-4018-859b-c2e2d3e0d603'  # 从event_context.get_bot_uuid()获取的Bot UUID

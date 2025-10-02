@@ -41,17 +41,20 @@ class DefaultEventListener(EventListener):
         # 注册PersonMessageReceived事件处理器
         @self.handler(events.PersonMessageReceived)
         async def handler(event_context: context.EventContext):
+            bot_uuid = self.plugin.get_config().get("bot_uuid", None)
             print("Hello LangBot Plugin!")
-            bot_uuid = await event_context.get_bot_uuid()
+            # print(f'bot_uuid: {bot_uuid}\nevent_context: {event_context}')
+            message_chain = event_context.event.message_chain
+            print(f'message_chain: {message_chain}')
+            # 将message_chain转换为字符串后进行比较
+            if str(message_chain) == 'TaskTimer':
+                bot_uuid = await event_context.get_bot_uuid()
+                await event_context.reply(
+                    platform_message.MessageChain([
+                        platform_message.Plain(text=f"bot_uuid: {bot_uuid}\n请将bot_uuid添加到WebUI插件配置处"),
+                    ])
+                )
             self.bot_uuid = bot_uuid  # 保存bot_uuid供后续使用
-            print(f'bot_uuid: {bot_uuid}\nevent_context: {event_context}')
-            
-            await event_context.reply(
-                platform_message.MessageChain([
-                    platform_message.Plain(text=f"Hello from LangBot Plugin!"),
-                ])
-            )
-        
         # 启动任务调度器
         await self.start_scheduler()
         
@@ -164,14 +167,34 @@ class DefaultEventListener(EventListener):
                             # 如果有指定目标ID，则发送消息
                             if target_id:
                                 try:
+                                    # 构建消息链
+                                    message_chain = []
+                                    
+                                    # 检查结果是否包含markdown格式的图片
+                                    # 匹配 ![alt text](image_url) 格式
+                                    import re
+                                    markdown_image_pattern = r'!\[(.*?)\]\((http[s]?:\/\/[^)]+)\)'  # 匹配markdown图片格式
+                                    match = re.search(markdown_image_pattern, str(result))
+                                    
+                                    if match:
+                                        # 如果是markdown图片格式，提取图片URL并创建Image消息
+                                        image_url = match.group(2)
+                                        message_chain.append(platform_message.Image(url=image_url))
+                                        
+                                        # 如果还有其他文本内容，添加为Plain消息
+                                        plain_text = re.sub(markdown_image_pattern, '', str(result)).strip()
+                                        if plain_text:
+                                            message_chain.append(platform_message.Plain(text=plain_text))
+                                    else:
+                                        # 普通文本消息
+                                        message_chain.append(platform_message.Plain(text=str(result)))
+                                    
                                     # 发送消息
                                     await self.plugin.send_message(
                                         bot_uuid=self.bot_uuid,  # 使用从event_context获取的bot_uuid
                                         target_type=target_type,
                                         target_id=target_id,
-                                        message_chain=platform_message.MessageChain([
-                                            platform_message.Plain(text=str(result)),
-                                        ]),
+                                        message_chain=platform_message.MessageChain(message_chain),
                                     )
                                     logger.info(f"已发送脚本执行结果到 {target_type} {target_id}")
                                 except Exception as e:

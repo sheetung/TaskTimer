@@ -3,17 +3,24 @@ kind: Plugin
 metadata:
   author: sheetung
   name: TaskTimer
-  repository: ''
-  version: 0.1.0
+  repository: 'https://github.com/sheetung/TaskTimer'
+  version: 0.1.2
   description:
     en_US: 定时触发任务脚本
     zh_Hans: 定时触发任务脚本
   label:
     en_US: TaskTimer
     zh_Hans: TaskTimer
-  icon: assets/icon.svg
+  icon: assets/icon.png
 spec:
-  config: []
+  config:
+    - name: bot_uuid
+      type: string
+      label:
+        en_US: 'Bot UUID'
+        zh_Hans: '机器人UUID'
+      required: true
+      default: ''
   components:
     EventListener:
       fromDirs:
