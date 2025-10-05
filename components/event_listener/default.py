@@ -41,6 +41,9 @@ class DefaultEventListener(EventListener):
         self.scheduler = AsyncIOScheduler(timezone=timezone('Asia/Shanghai'))
         
         self.bot_uuid = self.plugin.get_config().get("bot_uuid", None)
+        self.zaobao_cron = self.plugin.get_config().get("zaobao_cron", "0 8 * * *")
+        self.zaobao_target_type = self.plugin.get_config().get("zaobao_target_type", "group")
+        self.zaobao_target_id = self.plugin.get_config().get("zaobao_target_id", None)
         print(f'bot_uuid from config: {self.bot_uuid}')
 
         # 启动任务调度器
@@ -125,6 +128,14 @@ class DefaultEventListener(EventListener):
     async def schedule_task(self, task: Dict[str, Any]):
         """根据任务配置调度定时任务"""
         try:
+
+            # 检查是否是早报任务
+            if task.get('script') == 'zaobao_image.py':
+                logger.info(f"检测到早报任务，使用配置的默认参数覆盖")
+                task['schedule'] = self.zaobao_cron
+                task['target_type'] = self.zaobao_target_type
+                task['target_id'] = self.zaobao_target_id
+
             schedule = task.get('schedule')
             script = task.get('script')
             description = task.get('description', f'执行脚本: {script}')

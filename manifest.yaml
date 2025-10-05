@@ -4,7 +4,7 @@ metadata:
   author: sheetung
   name: TaskTimer
   repository: 'https://github.com/sheetung/TaskTimer'
-  version: 0.1.5
+  version: 0.1.7
   description:
     en_US: 定时触发任务脚本
     zh_Hans: 定时触发任务脚本
@@ -21,6 +21,35 @@ spec:
         zh_Hans: '机器人UUID'
       required: true
       default: ''
+    - name: zaobao_cron
+      type: string
+      label:
+        en_US: 'Zaobao Cron Expression(cron format)'
+        zh_Hans: '早报定时表达式（标准 cron 格式5位）'
+      required: false
+      default: '* 8 * * *'
+    - name: zaobao_target_type
+      type: select
+      label:
+        en_US: 'Zaobao Target type, only QQ can do now'
+        zh_Hans: '早报目标群or私聊，目前仅支持QQ'
+      default: group
+      options:
+        - name: group
+          label:
+            en_US: 'QQ Group'
+            zh_Hans: 'QQ群'
+        - name: person
+          label:
+            en_US: 'QQ Person'
+            zh_Hans: 'QQ私聊'
+    - name: zaobao_target_id
+      type: string
+      label:
+        en_US: 'Zaobao Target ID, only QQ can do now'
+        zh_Hans: '早报目标ID，目前仅支持QQ'
+      required: true
+      default: '965312424'
   components:
     EventListener:
       fromDirs:
