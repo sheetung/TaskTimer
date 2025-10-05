@@ -18,7 +18,7 @@ tasks:
   #   target_type: 'person'  # 个人消息
   #   bot_uuid: 'de639861-be05-4018-859b-c2e2d3e0d603'  # 从event_context.get_bot_uuid()获取的Bot UUID
   
-  - schedule: '0 8 * * *'
+  - schedule: '05 23 * * *'
     script: 'zaobao_image.py'
     enabled: true
     description: '每天早上8点获取并发送早报图片'

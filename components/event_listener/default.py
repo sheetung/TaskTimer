@@ -13,6 +13,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from langbot_plugin.api.entities.builtin.platform import message as platform_message
 from langbot_plugin.api.entities.builtin.provider import message as provider_message
+from pytz import timezone 
+from datetime import datetime
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -36,27 +38,45 @@ class DefaultEventListener(EventListener):
         await super().initialize()
         
         # 初始化任务调度器
-        self.scheduler = AsyncIOScheduler()
+        self.scheduler = AsyncIOScheduler(timezone=timezone('Asia/Shanghai'))
         
+        self.bot_uuid = self.plugin.get_config().get("bot_uuid", None)
+        print(f'bot_uuid from config: {self.bot_uuid}')
+
+        # 启动任务调度器
+        await self.start_scheduler()
         # 注册PersonMessageReceived事件处理器
         @self.handler(events.PersonMessageReceived)
         async def handler(event_context: context.EventContext):
-            bot_uuid = self.plugin.get_config().get("bot_uuid", None)
-            print("Hello LangBot Plugin!")
+            # bot_uuid = self.plugin.get_config().get("bot_uuid", None)
+            # print(f'bot_uuid from config: {bot_uuid}')
+            # print("Hello LangBot Plugin!")
             # print(f'bot_uuid: {bot_uuid}\nevent_context: {event_context}')
             message_chain = event_context.event.message_chain
             print(f'message_chain: {message_chain}')
             # 将message_chain转换为字符串后进行比较
             if str(message_chain) == 'TaskTimer':
                 bot_uuid = await event_context.get_bot_uuid()
+                if bot_uuid != self.bot_uuid:
+                    await event_context.reply(
+                        platform_message.MessageChain([
+                            platform_message.Plain(text=f"当前bot_uuid: {bot_uuid}\n与配置文件中的不一致，请检查！"),
+                        ])
+                    )
+                else:
+                    await event_context.reply(
+                        platform_message.MessageChain([
+                            platform_message.Plain(text=f"当前bot_uuid: {bot_uuid}\n与配置文件中的一致，配置正确！"),
+                        ])
+                    )
+            elif str(message_chain) == 'TaskTimer':
+                bot_uuid = await event_context.get_bot_uuid()
                 await event_context.reply(
                     platform_message.MessageChain([
                         platform_message.Plain(text=f"bot_uuid: {bot_uuid}\n请将bot_uuid添加到WebUI插件配置处"),
                     ])
                 )
-            self.bot_uuid = bot_uuid  # 保存bot_uuid供后续使用
-        # 启动任务调度器
-        await self.start_scheduler()
+            return
         
     async def start_scheduler(self):
         """\启动任务调度器并加载配置的定时任务"""
@@ -122,7 +142,7 @@ class DefaultEventListener(EventListener):
             # 添加任务到调度器，传递整个task对象
             self.scheduler.add_job(
                 self.execute_script, 
-                CronTrigger.from_crontab(schedule),
+                CronTrigger.from_crontab(schedule, timezone=timezone('Asia/Shanghai')),
                 args=[task],  # 传递整个task对象，包含所有配置信息
                 name=description
             )
