@@ -4,7 +4,7 @@ metadata:
   author: sheetung
   name: TaskTimer
   repository: 'https://github.com/sheetung/TaskTimer'
-  version: 0.1.7
+  version: 0.1.9
   description:
     en_US: 定时触发任务脚本
     zh_Hans: 定时触发任务脚本
@@ -27,7 +27,7 @@ spec:
         en_US: 'Zaobao Cron Expression(cron format)'
         zh_Hans: '早报定时表达式（标准 cron 格式5位）'
       required: false
-      default: '* 8 * * *'
+      default: '0 8 * * *'
     - name: zaobao_target_type
       type: select
       label:
